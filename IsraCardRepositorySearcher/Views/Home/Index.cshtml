@@ -1,0 +1,121 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+
+<div ng-app="app" ng-controller="ctrl">
+    <div class="jumbotron">
+        <h3>This is a repositories searcher in git hub {{textSearch}}:</h3>
+        <input ng-model="textSearch" ng-model-options="{debounce: 1000}"/>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <br />
+            {{bookedArray}}
+            <br /><br />
+            <table>
+                <tr>
+                    <th>BookMark</th>
+                    <th>html_url</th>
+                    <th>owner</th>
+                    <th>name</th>
+                    <th>size</th>
+                    <th>language</th>
+                    <th>watchers_count</th>
+                    <th>created_at</th>
+                </tr>
+                <tr ng-repeat="arow in data">
+                    <td> <button ng-click="InsertIntoBook(arow)"> uptade </button>
+                     {{IsBooked(arow.id)==true?"Booked":""}}</td>
+                    <td>{{arow.html_url}}</td>
+                    <td>{{arow.owner.login}}</td>
+                    <td>{{arow.name}}</td>
+                    <td>{{arow.size}}</td>
+                    <td>{{arow.language}}</td>
+                    <td>{{arow.watchers_count}}</td>
+                    <td>{{arow.created_at}}</td>
+                </tr>
+            </table>
+
+            <br />
+        </div>
+    </div>
+</div>
+
+<script>
+    angular.module('app', [])
+        .controller('ctrl', function ($scope, $http, $timeout) {
+     
+          
+            $scope.textSearch = '';
+            $scope.cangeCount = 0;
+            $scope.bookedArray = [];
+
+            $scope.$watch("textSearch", function () {
+                $scope.searchFunction($scope.textSearch);
+            }, true);
+
+            $scope.searchFunction = function (value)
+            {
+                $http({
+                    method: 'GET',
+                    url: 'https://api.github.com/search/repositories?q=' + value
+                }, ).then(function successCallback(response) {
+                    
+                    $scope.data = response.data.items;
+                    // this callback will be called asynchronously
+                    // when the response is available
+                }, function errorCallback(response) {
+                    // called asynchronously if an error occurs
+                    // or server returns response with an error status.
+                })
+
+            }
+            $scope.searchFunction('hello');
+
+
+            $scope.IsBooked = function (number) {
+                return $scope.bookedArray.indexOf(number) > -1;
+            }
+
+
+            $scope.InsertIntoBook = function (number) {
+               // $http.post('/Home/UpdateBookedData', JSON.stringify( { data: { data: 4 } }))
+                //$http({
+                //    method: 'POST',
+                //    url: '/Home/UpdateBooked?idnumber=' + number.id,
+                //    data: { jsonRowData: number }
+                //}, )
+                $http({
+                    method: 'POST',
+                    url: '/Home/UpdateBookedData?',
+                    data: { data: number }
+                }, )
+                    .then(function successCallback(response) {
+                    
+                    $scope.bookedArray = response.data;
+                    // this callback will be called asynchronously
+                    // when the response is available
+                }, function errorCallback(response) {
+                    // called asynchronously if an error occurs
+                    // or server returns response with an error status.
+                    });                
+            }
+
+
+            $http({
+                method: 'GET',
+                url: '/Home/Booked'
+            }, ).then(function successCallback(response) {
+                
+                $scope.bookedArray = response.data;
+                // this callback will be called asynchronously
+                // when the response is available
+            }, function errorCallback(response) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+            });
+            
+    });
+</script>
