@@ -82,16 +82,16 @@
 
             $scope.InsertIntoBook = function (number) {
                // $http.post('/Home/UpdateBookedData', JSON.stringify( { data: { data: 4 } }))
-                //$http({
-                //    method: 'POST',
-                //    url: '/Home/UpdateBooked?idnumber=' + number.id,
-                //    data: { jsonRowData: number }
-                //}, )
                 $http({
                     method: 'POST',
-                    url: '/Home/UpdateBookedData?',
-                    data: { data: number }
+                    url: '/Home/UpdateBooked?idnumber=' + number.id,
+                    data: { jsonRowData: number }
                 }, )
+                //$http({
+                //    method: 'POST',
+                //    url: '/Home/UpdateBookedData?',
+                //    data: { data: number }
+                //}, )
                     .then(function successCallback(response) {
                     
                     $scope.bookedArray = response.data;
